@@ -7,7 +7,8 @@ import os
 from pathlib import Path
 
 
-# script de transformation d'un répertoire EAC vers un fichier CSV
+# script de transformation des fichiers d'un répertoire EAC
+# vers un fichier CSV
 # Christophe Auvray, Archives nationales du monde du travail
 
 
@@ -17,7 +18,9 @@ def fill_cell(XPath):
     Si l'élément n'est pas trouvé (except), la cellule est créée vide."""
     try:
         element = root.find(XPath)
+        # Permet de prendre en compte les balises <p>, <emph>, <list>, etc.
         element = ''.join(element.itertext())
+        # Supprimer les espaces en trop avec les méthodes split() et join() 
         element = ' '.join(element.split())
     except AttributeError as e:
         element = ''
@@ -51,8 +54,6 @@ with open('output_EAC.csv', 'w', encoding="utf-8", newline="") as f:
     # Si j'utilise print(xml_files_list) je constate que cette liste fonctionne
     xml_files_list = list(map(str,Path(xml_directory).glob('**/*.xml')))
 
-    # Placer un compteur de fichiers
-    i = 1
     # Heure de début
     time_begin = time()
 
@@ -134,9 +135,7 @@ with open('output_EAC.csv', 'w', encoding="utf-8", newline="") as f:
 
         # Biographie ou histoire
         biogHist = fill_cell('.//{0}cpfDescription/{0}description/{0}biogHist'.format(namespace))
-
-        # Augmenter le compteur de 1
-        i += 1  
+ 
         # écriture de la ligne dans le CSV
         csv_line = [name, recordId, agencyCode, entityType, part, alternativeForm, existDatesFromDate, existDatesToDate, addressLine1, addressLine2, addressLine3, addressLine4,
                     legalStatusterm, legalStatusFromDate, legalStatusToDate, legalStatusNote, functionsTerm, functionsNote, structureOrGenealogy, biogHist]
